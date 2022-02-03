@@ -1,8 +1,14 @@
 import React ,{useState} from 'react';
-import { View,Text,StyleSheet, Button,TouchableWithoutFeedback,Keyboard } from 'react-native';
+import { View,Text,StyleSheet, Button,TouchableWithoutFeedback,Keyboard ,Alert} from 'react-native';
 import Card from '../components/Card';
 import colors from '../constants/colors';
 import Input from '../components/Input';
+import NumberContainer from '../components/NumberContainer';
+import MainButton from '../components/MainButton';
+;
+
+
+
 const StartGameScreen = props =>{
 
     
@@ -18,17 +24,24 @@ const StartGameScreen = props =>{
     };
     const confirmInputHandler = ()=>{
         const chosenNumber = parseInt(enteredValue);
-        if(chosenNumber === NaN || chosenNumber <= 0  || chosenNumber > 99){
+        if(isNaN(chosenNumber)|| chosenNumber <= 0  || chosenNumber > 99){
+            Alert.alert('Invalid Number!','Number has to be between 1 and 99',[{text:'Okay', style:'destructive',onPress: resetInputHandler}])
             return ;
         }
         setConfirmed(true);
         setSelectedNumber(chosenNumber);
         setEnteredValue('');
+        Keyboard.dismiss();
         
     };
     let confirmedOutput;
     if(confiremd){
-        confirmedOutput = <Text>Chosen Number: {selectedNumber}</Text>
+        confirmedOutput = 
+        <Card style={styles.summaryContainer}>
+        <Text> You Selected </Text>
+       <NumberContainer>{selectedNumber}</NumberContainer>
+       <MainButton  onPress={() =>props.onStartGame(selectedNumber)} >Start Game</MainButton>
+        </Card>
     }
     return(
         <TouchableWithoutFeedback onPress={()=> Keyboard.dismiss()}>
@@ -37,14 +50,14 @@ const StartGameScreen = props =>{
         <Text style = {styles.title} >Start a New Game !</Text>
         <Card style = {styles.inputContainer}>
       
-            <Text>Enter a Number</Text>
+            <Text style = {styles.text}>Enter a Number</Text>
           <Input blurOnSubmit autoCapitalize = 'none' autoCorrect = {false} keyboardType = "number-pad" maxLength = {2} style = {styles.input}
           onChangeText = {numberInputHandler}
           value = {enteredValue}
           />
             <View style={styles.buttonContainer}>
-                <Button style = {{width:150}} color={colors.accent} title='Reset'onPress={resetInputHandler}/>
-               <Button style = {{width:100}} color={colors.primary} title='Confirm'onPress={confirmInputHandler}/>
+                <Button style = {{paddingHorizont:0}} color={colors.primary} title='Reset'onPress={resetInputHandler}/>
+               <Button style = {{width:100}} color={colors.accent} title='Confirm'onPress={confirmInputHandler}/>
             </View>
         
         </Card>
@@ -63,7 +76,7 @@ const styles = StyleSheet.create({
     buttonContainer:{
         flexDirection:'row',
         width:'100%',
-        justifyContent:'space-around',
+        justifyContent:'space-between',
         paddingHorizontal:15,
     },
     inputContainer:{
@@ -75,11 +88,19 @@ const styles = StyleSheet.create({
     title:{
         fontSize:20,
         marginVertical:10,
+        fontFamily:'open-sans-bold',
     },
     input:{
         width:50,
         textAlign:'center',
     },
+    summaryContainer:{
+        marginTop:20,
+        alignItems:'center',
+    },
+    text:{
+        fontFamily:'open-sans',
+    }
 });
 
 export default StartGameScreen;
